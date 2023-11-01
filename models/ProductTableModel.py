@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
-load_dotenv()
+#load_dotenv()
 # DB_URL="mysql+pymysql://root:Skye110@localhost/ecompro"
 
 Base = declarative_base()
@@ -118,10 +118,11 @@ def displayProductsByTags(session, tag):
 if __name__=="__main__":
     load_dotenv()
     engine = create_engine(os.getenv("DB_URL"))
-    Base.metadata.create_all(engine)
+    
 
     Session= sessionmaker(bind=engine)
     session= Session()
+    Base.metadata.create_all(engine)
 
 
 
