@@ -4,9 +4,9 @@ from sqlalchemy.orm import sessionmaker, relationship
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# load_dotenv()
 #DB_URL = 'mysql+pymysql://root:root@localhost/fidelity'
-DB_ENGINE = create_engine(os.getenv("DB_URL"))
+# DB_ENGINE = create_engine(os.getenv("DB_URL"))
 Base = declarative_base()
 
 class CartItem(Base):
@@ -18,7 +18,7 @@ class CartItem(Base):
     # CUSTOMER = relationship('Customer')
     # PRODUCT = relationship('Product')
 
-Base.metadata.create_all(DB_ENGINE)
+# Base.metadata.create_all(DB_ENGINE)
 # Session = sessionmaker(bind=create_engine(DB_ENGINE))
 # session = Session()
 
@@ -66,6 +66,13 @@ def removeFromCart(session):
     #     print("Product not found in the CUSTOMER's cart.")
     # else:
     #     print("CUSTOMER or PRODUCT not found.")
+
+if __name__ == "__main__":
+    load_dotenv()
+    DB_ENGINE = create_engine(os.getenv("DB_URL"))
+    Session = sessionmaker(bind=DB_ENGINE)
+    session = Session()
+    Base.metadata.create_all(DB_ENGINE)
 
 # while True:
 #     print("1. Add Product to Cart")
