@@ -5,7 +5,7 @@ import uuid
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
 # DB_URL='mysql+pymysql://root:root@localhost/fidelity'
 
@@ -62,11 +62,12 @@ def getTlogUser(session, u_id):
 def getTlogSeller(session, s_id):
     return session.query(TransactionLog).filter_by(s_id=s_id).all()
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
+    load_dotenv()
     engine = create_engine(os.getenv("DB_URL"))
-    Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
+    Base.metadata.create_all(engine)
 
     # while True:
     #     print("1. Add Transaction Log")

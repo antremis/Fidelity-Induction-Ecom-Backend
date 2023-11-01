@@ -5,7 +5,7 @@ import uuid
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 # DB_URL = 'mysql+pymysql://root:root@localhost/fidelity'
 # engine = create_engine(os.getenv("DB_URL"))
 Base=declarative_base()
@@ -50,10 +50,13 @@ def deleteUser(session, u_id):
         
 
 if __name__ == "__main__":
+    
+    load_dotenv()
     engine = create_engine(os.getenv("DB_URL"))
-    Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
+    Base.metadata.create_all(engine)
+    
 
 
 
