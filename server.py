@@ -43,22 +43,20 @@ def product():
         #body=request.get_json(force=True)
         
         data = request.get_json(force=True)    #parse this JSON data and convert it into a Python dictionary
-        p_id = data.get('p_id')
+        # p_id = data.get('p_id')
         name = data.get('name')
         cost = data.get('cost')
         tag = data.get('tag')
         img = data.get('img')
         des = data.get('des')
         s_id = data.get('s_id')
-        new_id = ProductTableModel.addProduct(session, p_id, name, cost, tag, img, des, s_id)
+        new_id = ProductTableModel.addProduct(session, name, cost, tag, img, des, s_id)
         return jsonify({"message": "Product added successfully", "p_id": new_id})
     
 @app.route("/api/products/<p_id>",methods=["GET","PATCH","DELETE"])
 def productById(p_id):
     if request.method == "GET":
         # Get 1 row from products table where products.id = id using sqlalchemy functions
-        data = request.get_json(force=True)
-        p_id = data.get('p_id')
         product = ProductTableModel.readProductById(session, p_id)
         if product:
             return jsonify({
