@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, Float, String
-from config import Base, session
+from server import Base, session
 import uuid
 
 class TransactionLog(Base):

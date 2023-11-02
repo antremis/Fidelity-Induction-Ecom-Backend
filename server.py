@@ -1,25 +1,31 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from dotenv import load_dotenv
-from config import session
 import models.CartModel as CartModel
 import models.ProductTableModel as ProductTableModel
 import models.ReviewModel as ReviewModel
 import models.TLogModel as TLogModel
 import models.TPLogsModel as TPLogsModel
 import models.UserModel as UserModel
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from ProductTableModel import displayAllProducts, addProduct
-
+from dotenv import load_dotenv
+import os
 load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
+
+Base = declarative_base()
+engine = create_engine(os.getenv("DB_URL"))
+Session = sessionmaker(bind=engine)
+Base.metadata.create_all(engine)
+session = Session()
 
 @app.route("/api/test")
 def test():
     # Template function
     if request.method == "GET":
-        print(session)
         TPLogsModel.insert(session, 1, 2)
         return jsonify({"mssg": "success"})
     elif request.method == "POST":

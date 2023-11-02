@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, String
-from config import Base, session
+from server import Base, session
 import uuid
 
 class User(Base):
@@ -8,8 +8,6 @@ class User(Base):
     email=Column(String(50), unique=True, nullable=False)
     phone=Column(String(10))
     address=Column(String(100))
-
-
 
 def getUser(session, u_id):
     return session.query(User).filter_by(u_id=u_id).first()
