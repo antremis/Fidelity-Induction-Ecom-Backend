@@ -9,7 +9,7 @@ import models.TLogModel as TLogModel
 import models.TPLogsModel as TPLogsModel
 import models.UserModel as UserModel
 from sqlalchemy.orm import sessionmaker
-from ProductTableModel import displayAllProducts, addProduct
+from ProductTableModel import displayAllProducts, addProduct, readProductById, updateProductInfo, deleteProduct
 
 load_dotenv()
 app = Flask(__name__)
@@ -59,13 +59,30 @@ def product():
 def productById():
     if request.method == "GET":
         # Get 1 row from products table where products.id = id using sqlalchemy functions
-        return jsonify({"mssg": "success"})
+        product = readProductById(session, id)
+        if product:
+            return jsonify({
+                "p_id": product.p_id,
+                "name": product.name,
+                "cost": product.cost,
+                "tag": product.tag,
+                "img": product.img,
+                "des": product.des,
+                "s_id": product.s_id
+            })
+        else:
+            return jsonify({"message": "Product not found"})
+        
     elif request.method == "PATCH":
         # Update 1 row in products table where products.id = id using sqlalchemy functions
-        return jsonify({"mssg":"success", "data": [1, 2, 3, 4, 5]})
+        data = request.get_json()
+        updateProductInfo(session, id, **data)
+        return jsonify({"message": "Product updated successfully"})
+    
     elif request.method == "DELETE":
         # Delete 1 row from products table where products.id = id using sqlalchemy functions
-        return jsonify({"mssg": "success"})
+        deleteProduct(session, id)
+        return jsonify({"message": "Product deleted successfully"})
 
     
 if __name__ == "__main__":
