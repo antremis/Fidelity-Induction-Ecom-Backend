@@ -1,15 +1,6 @@
 from sqlalchemy import create_engine, Column, String, Integer, CHAR
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
+from server import Base, session
 import uuid
-import os
-
-# DB_URL="mysql+pymysql://root:23Sona81*#@localhost/E_Commerce"
-
-
-Base = declarative_base()  
-
 
 class TransactionProduct(Base):  #TransactionProduct
     __tablename__ = "T_P_Logs"
@@ -100,11 +91,6 @@ def deleteTransaction(session, transaction_id_to_delete):
 #     print(f"Transaction ID {transaction_id_to_delete} not found.")
 
 if __name__ == "__main__":
-    load_dotenv()
-    engine = create_engine(os.getenv("DB_URL"))
-    Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
 
     insert(session,1234,5)
     insert(session,123567,8)

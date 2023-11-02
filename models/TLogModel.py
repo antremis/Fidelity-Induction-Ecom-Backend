@@ -1,16 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, Float, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from server import Base, session
 import uuid
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# DB_URL='mysql+pymysql://root:root@localhost/fidelity'
-
-# engine = create_engine(os.getenv("DB_URL"))
-Base = declarative_base()
 
 class TransactionLog(Base):
     __tablename__ = 'T_log'
@@ -20,11 +10,6 @@ class TransactionLog(Base):
     s_id = Column(String(100), unique=True)
     t_cost = Column(Float(50))
     utr_number = Column(String(100), unique=True, nullable=False)
-
-# Base.metadata.create_all(engine)
-
-# Session = sessionmaker(bind=engine)
-# session = Session()
 
 def addTransactionLog(session, u_id, s_id, t_cost, utr_number):
     new_transaction_log = TransactionLog(u_id=u_id, s_id=s_id, t_cost=t_cost, utr_number=utr_number)
@@ -63,11 +48,7 @@ def getTlogSeller(session, s_id):
     return session.query(TransactionLog).filter_by(s_id=s_id).all()
 
 if __name__ == "__main__":
-    engine = create_engine(os.getenv("DB_URL"))
-    Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
+    pass
     # while True:
     #     print("1. Add Transaction Log")
     #     print("2. Update Transaction Log")

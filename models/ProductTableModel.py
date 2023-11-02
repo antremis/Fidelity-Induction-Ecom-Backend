@@ -1,13 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, Text
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-import os
-from dotenv import load_dotenv
-#load_dotenv()
-# DB_URL="mysql+pymysql://root:Skye110@localhost/ecompro"
-
-Base = declarative_base()
-
+from server import Base, session
 
 class Product(Base):
     __tablename__ = 'products'
@@ -116,16 +108,7 @@ def displayProductsByTags(session, tag):
     return filtered_products
 
 if __name__=="__main__":
-    load_dotenv()
-    engine = create_engine(os.getenv("DB_URL"))
-    
-
-    Session= sessionmaker(bind=engine)
-    session= Session()
-    Base.metadata.create_all(engine)
-
-
-
+    pass
     # for product in filtered_products:
     #     print(f"Product ID: {product.p_id}")
     #     print(f"Name: {product.name}")
