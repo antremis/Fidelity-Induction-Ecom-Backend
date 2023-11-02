@@ -80,6 +80,35 @@ def productById():
         return jsonify({"mssg": "success"})
 
     
+@app.route("/api/logs", methods = ['GET', 'POST'])
+def logs():
+    if request.method == "GET":
+        return jsonify({"mssg":"success"})
+    elif request.method == "POST":
+        data = request.get_json(force = True)
+        pid_quantity_list = data.get("pid_quantity_list") 
+        id = TPLogsModel.generateRandomTidAndInsert(session,pid_quantity_list)
+        return jsonify({"mssg":"success", "data": id})
+    
+
+@app.route("/api/logs/<t_id>", methods = ['GET', 'PATCH', 'DELETE'])
+def transactionById(t_id):
+    if request.method == "GET":
+       # t_id = "6cac23b8-8d68-4815-94ab-e14a906a3ed8"
+       result = TPLogsModel.getPidQuantityForTid(session,t_id)
+       return jsonify({"mssg":"success", "data": [list(res) for res in result]})
+    
+    if request.method == "PATCH":
+        return jsonify({"mssg":"success", "data": [1, 2, 3, 4, 5]})
+    
+    if request.method == "DELETE":
+       # t_id = "d263ae6d-d428-4bd9-82dc-7c298ef6ef6a"
+        delete_tid = TPLogsModel.deleteTransaction(session,t_id)
+        return jsonify({"mssg":"success", "data": delete_tid})
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+<<<<<<< HEAD
     app.run(debug=True)
+=======
+    app.run(debug = True)
+>>>>>>> origin/arshita
