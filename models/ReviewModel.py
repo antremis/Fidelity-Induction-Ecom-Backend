@@ -3,6 +3,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime,fu
 from config import Base, session
 import datetime
 import uuid
+
 # Define the database connection URL for MySQL
 # Replace 'username', 'password', 'host', 'port', and 'database_name' with your actual MySQL credentials
 
@@ -31,8 +32,9 @@ def createNewReview(session,p_id,review,u_id,rating):
     new_review=ReviewClass(p_id=p_id,review=review,u_id=u_id,rating=rating)
     session.add(new_review)
     session.commit()
+    return new_review.r_id
 
-def readReviewPID(session,p_id):
+def readReviewPid(session,p_id):
     review1=session.query(ReviewClass).filter(ReviewClass.p_id==p_id).all()
     return review1
 

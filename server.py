@@ -250,8 +250,70 @@ def userById(u_id):
         # address = data.get("address")
         UserModel.updateUserInfo(session, **data)
         return jsonify({"msg":"Information Updated"}) 
+    
+@app.route("/api/review",methods=["GET","POST"])
+def reviewPid():
+    # if request.method == "GET":
+    #     all_review=readReviewPid(session)
+    #     review_list=[]
+    #     for reviews in all_review:
+    #         review_list.append({
+    #             "r_id":reviews.r_id,
+    #             "p_id":reviews.p_id,
+    #             "review":reviews.review,
+    #             "u_id":reviews.u_id,
+    #             "date":reviews.date,
+    #             "rating":reviews.rating
+    #         })
+    #     return jsonify({"reviews":review_list})
+    # if request.method == "GET":
+    #     all_review=readReviewUid(session)
+    #     review_list=[]
+    #     for reviews in all_review:
+    #         review_list.append({
+    #             "r_id":reviews.r_id,
+    #             "p_id":reviews.p_id,
+    #             "review":reviews.review,
+    #             "u_id":reviews.u_id,
+    #             "date":reviews.date,
+    #             "rating":reviews.rating
+    #         })
+    #     return jsonify({"reviews":review_list})
+    if request.method == "POST":
+
+        data = request.get_json(force=True)
+        
+        p_id=data.get("p_id")
+        review=data.get("review")
+        u_id=data.get("u_id")
+        rating=data.get("rating")
+
+        new_id = ReviewModel.createNewReview(session,p_id,review,u_id,rating)
+
+        return jsonify({"message": "Product added successfully", "new review": new_id})
+
+@app.route("/api/review/<r_id>",methods=["GET","PATCH","DELETE"])
+def reviewById(r_id):
+    if request.method == "GET":
+        return jsonify({"mssg": "success"})
+    
+    elif request.method == "DELETE":
+
+        ReviewModel.deleteReview(session,r_id)
+
+        return jsonify({"mmsg":"success"})
+    
+    elif request.method == "PATCH":
+        data=request.get_json(force=True)
+        review=data.get("review")
+        rating=data.get("rating")
+
+        new_review=ReviewModel.updateReview(session,r_id,review,rating)
+
+        return jsonify({"mmsg":"success", "updated review": new_review})
 
 
+    
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    app.run(debug=True)
+    app.run()
