@@ -1,6 +1,6 @@
 # Import necessary SQLAlchemy components
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime,func,UniqueConstraint
-from server import Base, session
+from config import Base, session
 import datetime
 import uuid
 
@@ -16,7 +16,7 @@ import uuid
 class ReviewClass(Base):
     __tablename__ = 'review_table'  # Table name
 
-    r_id = Column(String(255), primary_key=True, default=str(uuid.uuid4()))  
+    r_id = Column(String(255), primary_key=True, default=uuid.uuid4)  
     p_id = Column(Integer)  # Product ID
     review = Column(Text)  # Review text
     u_id = Column(String(50))  # User name (up to 50 characters)
@@ -32,6 +32,7 @@ def createNewReview(session,p_id,review,u_id,rating):
     new_review=ReviewClass(p_id=p_id,review=review,u_id=u_id,rating=rating)
     session.add(new_review)
     session.commit()
+    return new_review.r_id
 
 def readReviewPid(session,p_id):
     review1=session.query(ReviewClass).filter(ReviewClass.p_id==p_id).all()

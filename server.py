@@ -6,16 +6,15 @@ import models.ReviewModel as ReviewModel
 import models.TLogModel as TLogModel
 import models.TPLogsModel as TPLogsModel
 import models.UserModel as UserModel
-from config import Base,session,engine
+from config import Base, engine, session
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app)
 
 @app.route("/api/test")
 def test():
     # Template function
     if request.method == "GET":
-        TPLogsModel.insert(session, 1, 2)
         return jsonify({"mssg": "success"})
     elif request.method == "POST":
         return jsonify({"mmsg":"success", "data": [1, 2, 3, 4, 5]})
@@ -24,7 +23,8 @@ def test():
 def product():
     if request.method == "GET":
         # Get all rows from products table using sqlalchemy functions
-        all_products = ReviewModel.displayAllProducts(session)
+        id="1"
+        all_products = ProductTableModel.displayAllProducts(session, id)
         products_list = []
         for product in all_products:
             products_list.append({
@@ -95,38 +95,35 @@ def reviewPid():
     if request.method == "POST":
 
         data = request.get_json(force=True)
-        r_id=data.get("r_id")
+        
         p_id=data.get("p_id")
         review=data.get("review")
         u_id=data.get("u_id")
-        date=data.get("date")
         rating=data.get("rating")
-        new_id = ReviewModel.createNewReview(session, r_id, p_id, review, u_id, date, rating)
+
+        new_id = ReviewModel.createNewReview(session,p_id,review,u_id,rating)
 
         return jsonify({"message": "Product added successfully", "new review": new_id})
 
 @app.route("/api/review/<r_id>",methods=["GET","PATCH","DELETE"])
-def reviewById():
+def reviewById(r_id):
     if request.method == "GET":
         return jsonify({"mssg": "success"})
+    
     elif request.method == "DELETE":
-        data=request.get_json(force=True)
-        r_id=data.get("r_id")
 
         ReviewModel.deleteReview(session,r_id)
 
         return jsonify({"mmsg":"success"})
+    
     elif request.method == "PATCH":
         data=request.get_json(force=True)
-        r_id=data.get("r_id")
         review=data.get("review")
         rating=data.get("rating")
 
         new_review=ReviewModel.updateReview(session,r_id,review,rating)
 
-
         return jsonify({"mmsg":"success", "updated review": new_review})
-    
 
 
     

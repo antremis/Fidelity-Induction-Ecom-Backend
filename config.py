@@ -5,11 +5,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-
-
 Base = declarative_base()
 engine = create_engine(os.getenv("DB_URL"))
 Session = sessionmaker(bind=engine)
-Base.metadata.create_all(engine)
 session = Session()
-
