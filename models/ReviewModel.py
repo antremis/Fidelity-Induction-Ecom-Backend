@@ -1,10 +1,8 @@
 # Import necessary SQLAlchemy components
 from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime,func,UniqueConstraint
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-import datetime,uuid
-import os
-from dotenv import load_dotenv
+from server import Base, session
+import datetime
+import uuid
 # Define the database connection URL for MySQL
 # Replace 'username', 'password', 'host', 'port', and 'database_name' with your actual MySQL credentials
 
@@ -12,9 +10,6 @@ from dotenv import load_dotenv
 # Create an SQLAlchemy engine to connect to the MySQL database
 
 # Create a base class for declarative class definitions
-Base = declarative_base()
-
-
 
 # Define the Product table class that maps to the 'product' table
 class ReviewClass(Base):
@@ -86,13 +81,5 @@ def deleteReview(session,r_id):
 
 if __name__=="__main__":
     
-    load_dotenv()
-
-    engine = create_engine(os.getenv("DB_URL"))
- 
-    # Establish a session to interact with the database
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    Base.metadata.create_all(engine)
-
+    pass
 
