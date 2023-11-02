@@ -73,6 +73,64 @@ def productById():
         # Delete 1 row from products table where products.id = id using sqlalchemy functions
         return jsonify({"mssg": "success"})
 
+
+@app.route("/api/transaction", methods=["GET", "POST"])
+def transaction():
+    # Template function
+    if request.method == "GET":
+        all_t_logs = getAllTlogs(session)
+        transaction_logs_list = []
+        for t_logs in all_t_logs:
+            transaction_logs_list.append({
+                "p_id": t_logs.t_id,
+                "u_id": t_logs.u_id,
+                "s_id": t_logs.s_id,
+                "t_cost":  t_logs.t_cost,
+                "utr_number": t_logs.utr_number,
+            })
+
+        return jsonify({"t_logs": "transaction_logs_list"})
+    elif request.method == "POST":
+        data = request.get_json()
+
+        p_id = data.get('p_id')
+        u_id = data.get('u_id')
+        s_id = data.get('s_id')
+        t_cost = data.get('t_cost')
+        utr_number = data.get("utr_number")
+
+        new_transaction_log = TransactionLog(session, u_id=u_id, s_id=s_id, t_cost=t_cost, utr_number=utr_number)
+
+        return jsonify({"mmsg":"Transaction Log added", "Transaction Log": new_transaction_log})
+
+@app.route("/api/transaction/:t_id", methods=["GET", "DELETE", "PATCH"])
+def transactionById(t_id):
+    if request.method == "GET":
+        transaction_log_byID = getTlog(session, t_id)
+        if transaction_log_byID:
+            return jsonify({
+                "p_id": transaction_log_byID.p_id
+                "u_id": transaction_log_byID.u_id
+                "s_id": transaction_log_byID.s_id
+                "t_cost": transaction_log_byID.t_cost
+                "utr_number": transaction_log_byID.utr_number
+            })
+        return jsonify({"Transaction Log By id": transaction_log_byID})
+
+    elif request.method == "DELETE":
+        deleteTransactionLog(session, t_id)
+        return jsonify({"mssg": "Transaction Log Deleted"})
+
+    elif request.method == "PATCH":
+        data = request.get_json()
+        t_id = data.get('t_id')
+        u_id = data.get('u_id')
+        s_id = data.get('s_id')
+        t_cost = data.get('t_cost')
+        utr_number = data.get("utr_number")
+        updateTransactionLog(session, t_id, u_id, s_id, t_cost, utr_number)
+        return jsonify({"msg":"Information Updated"}) 
+
     
 if __name__ == "__main__":
     app.run()
