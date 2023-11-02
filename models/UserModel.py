@@ -9,8 +9,6 @@ class User(Base):
     phone=Column(String(10))
     address=Column(String(100))
 
-
-
 def getUser(session, u_id):
     return session.query(User).filter_by(u_id=u_id).first()
 

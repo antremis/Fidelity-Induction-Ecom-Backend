@@ -36,7 +36,7 @@ def updateProductInfo(session, p_id,name=None,cost=None,tag=None,img=None,des=No
         #print(f"Product ID {product} not found.")
     
 def readProductById(session, p_id):
-    read_product_var = session.query(Product).filter_by(Product.p_id==p_id).first()
+    read_product_var = session.query(Product).filter(Product.p_id==p_id).first()
     return read_product_var
     
 
