@@ -8,7 +8,6 @@ import models.TPLogsModel as TPLogsModel
 import models.UserModel as UserModel
 from config import Base, engine, session
 
-load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
@@ -75,12 +74,13 @@ def logs():
         return jsonify({"mmsg":"success", "data": id})
     
 
-@app.route("/api/logs/:t_id")
+@app.route("/api/logs/<t_id>")
 def transactionById(t_id):
     if request.method == "GET":
        # t_id = "6cac23b8-8d68-4815-94ab-e14a906a3ed8"
         result = TPLogsModel.getPidQuantityForTid(session,t_id)
-        return jsonify({"mmsg":"success", "data": result})
+        print(result)
+        return jsonify({"mmsg":"success", "data": result.list()})
     
     if request.method == "PATCH":
         return jsonify({"mmsg":"success", "data": [1, 2, 3, 4, 5]})
@@ -91,4 +91,4 @@ def transactionById(t_id):
         return jsonify({"mmsg":"success", "data": delete_tid})
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    app.run()
+    app.run(debug = True)
