@@ -11,13 +11,26 @@ from config import Base, engine, session
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/api/test")
+@app.route("/api/test", methods=["GET", "POST"])
 def test():
     # Template function
     if request.method == "GET":
         return jsonify({"mssg": "success"})
     elif request.method == "POST":
-        return jsonify({"mmsg":"success", "data": [1, 2, 3, 4, 5]})
+        # create log
+        body = request.get_json(force=True)
+        p_id=body.get("pid")
+        qty=body.get("quantity")
+        TPLogsModel.insert(session, p_id, qty)
+        return jsonify({"mmsg":"success"})
+
+@app.route("/api/test/<id>", methods=["GET", "POST"])
+def get(id):
+    if request.method == "GET":
+        result = TPLogsModel.getPidQuantityForTid(session, id)
+        return jsonify({"mmsg":"success", "data": [list(res) for res in result]})
+    elif request.method == "POST":
+        return jsonify({"mmsg":"success", "data":1})
 
 @app.route("/api/product", methods=["GET", "POST"])
 def product():
@@ -65,4 +78,4 @@ def productById():
     
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    app.run()
+    app.run(debug=True)

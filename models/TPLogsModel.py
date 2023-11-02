@@ -51,6 +51,10 @@ def generateRandomTidAndInsert(session, pid_quantity_list):  #generateRandomTidA
 def getPidQuantityForTid(session, t_id):
     results = session.query(TransactionProduct.p_id, TransactionProduct.quantity).filter(TransactionProduct.t_id == t_id).all()
     return results
+    # print -> [Row(), Row()] -> [(), ()]
+    # __repr__
+    
+
 
 # result = getPidQuantityForTid("6cac23b8-8d68-4815-94ab-e14a906a3ed8")
 # print("hii: ",result)

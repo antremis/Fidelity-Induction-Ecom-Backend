@@ -15,7 +15,7 @@ import uuid
 class ReviewClass(Base):
     __tablename__ = 'review_table'  # Table name
 
-    r_id = Column(String(255), primary_key=True, default=str(uuid.uuid4()))  
+    r_id = Column(String(255), primary_key=True, default=uuid.uuid4)  
     p_id = Column(Integer)  # Product ID
     review = Column(Text)  # Review text
     u_id = Column(String(50))  # User name (up to 50 characters)
