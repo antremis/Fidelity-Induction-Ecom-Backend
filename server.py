@@ -67,7 +67,7 @@ def product():
         new_id = addProduct(session, p_id, name, cost, tag, img, des, s_id)
         return jsonify({"message": "Product added successfully", "p_id": new_id})
     
-@app.route("/api/products/:id",methods=["GET","PATCH","DELETE"])
+@app.route("/api/products/<id>",methods=["GET","PATCH","DELETE"])
 def productById():
     if request.method == "GET":
         # Get 1 row from products table where products.id = id using sqlalchemy functions
@@ -105,10 +105,130 @@ def transactionById(t_id):
        # t_id = "d263ae6d-d428-4bd9-82dc-7c298ef6ef6a"
         delete_tid = TPLogsModel.deleteTransaction(session,t_id)
         return jsonify({"mssg":"success", "data": delete_tid})
+
+@app.route("/api/transaction", methods=["GET", "POST"])
+def transaction():
+    # Template function
+    if request.method == "GET":
+        # data=request.get_json(force=True)
+        all_t_logs = TLogModel.getAllTlogs(session)
+        transaction_logs_list = []
+        for t_logs in all_t_logs:
+            transaction_logs_list.append({
+                "p_id": t_logs.t_id,
+                "u_id": t_logs.u_id,
+                "s_id": t_logs.s_id,
+                "t_cost":  t_logs.t_cost,
+                "utr_number": t_logs.utr_number,
+            })
+        
+        # return jsonify({"msg": "success"})
+        # print(transaction_logs_list)
+        return jsonify({"t_logs": transaction_logs_list})
+
+    elif request.method == "POST":
+        data = request.get_json(force=True)
+
+        p_id = data.get('p_id')
+        u_id = data.get('u_id')
+        s_id = data.get('s_id')
+        t_cost = data.get('t_cost')
+        utr_number = data.get("utr_number")
+
+        new_transaction_log = TLogModel.addTransactionLog(session, u_id, s_id, t_cost, utr_number)
+        # print(new_transaction_log)
+        return jsonify({"mmsg":"Transaction Log added", "Transaction Log": new_transaction_log})
+
+@app.route("/api/transaction/<t_id>", methods=["GET", "DELETE", "PATCH"])
+def transactionById(t_id):
+    if request.method == "GET":
+        data = request.get_json(force=True)
+        t_id = data.get("t_id")
+        transaction_log_byID = TLogModel.getTlog(session, t_id)
+        if transaction_log_byID:
+            return jsonify({
+                "t_id": transaction_log_byID.t_id,
+                "u_id": transaction_log_byID.u_id,
+                "s_id": transaction_log_byID.s_id,
+                "t_cost": transaction_log_byID.t_cost,
+                "utr_number": transaction_log_byID.utr_number,
+            })
+        return jsonify({"Transaction Log By id": transaction_log_byID})
+
+    elif request.method == "DELETE":
+        data = request.get_json(force=True)
+        t_id = data.get('t_id')
+        TLogModel.deleteTransactionLog(session, t_id)
+        return jsonify({"mssg": "Transaction Log Deleted"})
+
+    elif request.method == "PATCH":
+        data = request.get_json(force=True)
+        t_id = data.get('t_id')
+        # u_id = data.get('u_id')
+        # s_id = data.get('s_id')
+        # t_cost = data.get('t_cost')
+        # utr_number = data.get("utr_number")
+        # TLogModel.updateTransactionLog(session, t_id, u_id, s_id, t_cost, utr_number)
+        TLogModel.updateTransactionLog(session, **data)
+        return jsonify({"msg":"Information Updated"}) 
+
+@app.route("/api/user", methods=["GET", "POST"])
+def user():
+    # Template function
+    if request.method == "GET":
+        all_users = UserModel.getAllUsers(session)
+        users_list = []
+        for users in all_users:
+            users_list.append({
+                "u_id": users.u_id,
+                "email": users.email,
+                "phone":  users.phone,
+                "address": users.address,
+            })
+        
+        return jsonify({"msg": "success", "data": [list(result) for result in users_list]})
+
+    elif request.method == "POST":
+        data = request.get_json(force=True)
+
+        email = data.get('email')
+        phone = data.get('phone')
+        address = data.get('address')
+       
+        new_user = UserModel.addUser(session, email, phone, address)
+        return jsonify({"mmsg":"User added", "User": new_user})
+
+
+@app.route("/api/user/<u_id>", methods=["GET", "DELETE", "PATCH"])
+def userById(u_id):
+    if request.method == "GET":
+        data = request.get_json(force=True)
+        user_by_id = UserModel.getUser(session, u_id)
+        if user_by_id:
+            return jsonify({
+                "u_id": user_by_id.u_id,
+                "email": user_by_id.email,
+                "phone": user_by_id.phone,
+                "address": user_by_id.address
+            })
+        return jsonify({"User By id": user_by_id})
+
+    elif request.method == "DELETE":
+        data = request.get_json(force=True)
+        u_id = data.get('u_id')
+        UserModel.deleteUser(session, u_id)
+        return jsonify({"mssg": "User Log Deleted"})
+
+    elif request.method == "PATCH":
+        data = request.get_json()
+        u_id = data.get('u_id')
+        # email = data.get('email')
+        # phone = data.get('phone')
+        # address = data.get("address")
+        UserModel.updateUserInfo(session, **data)
+        return jsonify({"msg":"Information Updated"}) 
+
+
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-<<<<<<< HEAD
     app.run(debug=True)
-=======
-    app.run(debug = True)
->>>>>>> origin/arshita
