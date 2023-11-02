@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import models.AuthModel as AuthModel
 import models.CartModel as CartModel
 import models.ProductTableModel as ProductTableModel
 import models.ReviewModel as ReviewModel
@@ -11,15 +12,31 @@ from config import Base, engine, session
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/api/test")
-def test():
-    # Template function
+@app.route("/api/auth", methods=["GET", "PUT", "POST"])
+def auth():
     if request.method == "GET":
-        return jsonify({"mssg": "success"})
+        users = AuthModel.getUsers(session)
+        return jsonify({"mssg": "success", "data":users})
+    if request.method == "PUT":
+        data = request.get_json(force=True)
+        username = data.get("username")
+        password = data.get("password")
+        uid = AuthModel.createUser(session, username, password)
+        return jsonify({"mssg": "success", "data":uid})
     elif request.method == "POST":
-        return jsonify({"mmsg":"success", "data": [1, 2, 3, 4, 5]})
+        body = request.get_json(force=True)
+        username=body.get("username")
+        password=body.get("password")
+        uid = AuthModel.checkUser(session, username, password)
+        return jsonify({"mssg":"success", "data": uid})
 
-@app.route("/api/product", methods=["GET", "POST"])
+@app.route("/api/auth/<id>", methods=["DELETE"])
+def get(id):
+    if request.method == "DELETE":
+        result = AuthModel.deleteUser(session, id)
+        return jsonify({"mssg":"success"})
+
+@app.route("/api/product", methods=["DELETE"])
 def product():
     if request.method == "GET":
         # Get all rows from products table using sqlalchemy functions
