@@ -1,11 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <script src="cdn.axios.com" ></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Axios Example</title>
 </head>
-<script>
-    // let res = axios.get('127.0.0.1:5000/api/logs')
-    // let res = axios.post('127.0.0.1:5000/api/logs', {pid: 1, quantity: 5})
-    // let res = axios.get('127.0.0.1:5000/api/logs/1')
-    // let res = axios.patch('127.0.0.1:5000/api/logs/1', {pid: 1, quantity: 3})
-    // let res = axios.delete('127.0.0.1:5000/api/logs/1')
-    // res.data, res.json
-</script>
+
+<body>
+  <h1>Axios Example</h1>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    // GET request to fetch all products
+    axios.get('http://127.0.0.1:5000/api/product')
+      .then(function (response) {
+        // handle success
+        console.log(response.data);
+        // Process the response data as needed
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+
+    // POST request to add a product
+    axios.post('http://127.0.0.1:5000/api/product', {
+       
+        name: 'Product Name',
+        cost: 100,
+        tag: 'Product Tag',
+        img: 'product.jpg',
+        des: 'Product Description',
+        s_id: "1"
+      })
+      .then(function (response) {
+        // handle success
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+
+    // GET request to fetch a product by ID
+    axios.get('http://127.0.0.1:5000/api/products/1')
+      .then(function (response) {
+        // handle success
+        console.log(response.data);
+        // Process the response data as needed
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+
+    // PATCH request to update a product
+    axios.patch('http://127.0.0.1:5000/api/products/a04a0b82-fc7c-4c84-8f48-ab586af4cc82', {
+        p_id: 1,
+        name: 'Updated Product Name',
+        cost: 150
+      })
+      .then(function (response) {
+        // handle success
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+
+    // DELETE request to delete a product
+    axios.delete('http://127.0.0.1:5000/api/products/1')
+      .then(function (response) {
+        // handle success
+        console.log(response.data);
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  </script>
+</body>
+
+</html>

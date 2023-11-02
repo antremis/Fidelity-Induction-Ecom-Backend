@@ -1,24 +1,25 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, Text
 from config import Base, session
+import uuid
 
 class Product(Base):
     __tablename__ = 'products'
 
-    p_id = Column(Integer, primary_key=True, autoincrement=True)
+    p_id = Column(String(50), primary_key=True, default=uuid.uuid4)
     name = Column(String(255))
     cost = Column(Float)
     tag = Column(String(255))
     img = Column(String(255))
     des = Column(Text)
-    s_id = Column(Integer)
+    s_id = Column(String(50))
 
 # Create the table in the database
 
-def addProduct(session,p_id,name,cost,tag,img,des,s_id):
-    new_product = Product(p_id=p_id, name=name, cost=cost, tag=tag, img=img, des=des, s_id=s_id)
+def addProduct(session,name,cost,tag,img,des,s_id):
+    new_product = Product( name=name, cost=cost, tag=tag, img=img, des=des, s_id=s_id)
     session.add(new_product)
     session.commit()
-    return p_id
+    return new_product.p_id
     # print("Product added successfully.")
 
 def updateProductInfo(session, p_id,name=None,cost=None,tag=None,img=None,des=None,s_id=None):
@@ -36,7 +37,7 @@ def updateProductInfo(session, p_id,name=None,cost=None,tag=None,img=None,des=No
         #print(f"Product ID {product} not found.")
     
 def readProductById(session, p_id):
-    read_product_var = session.query(Product).filter_by(Product.p_id==p_id).first()
+    read_product_var = session.query(Product).filter(Product.p_id==p_id).first()
     return read_product_var
     
 
