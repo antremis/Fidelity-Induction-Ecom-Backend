@@ -67,6 +67,7 @@ def productById():
 def transaction():
     # Template function
     if request.method == "GET":
+        # data=request.get_json(force=True)
         all_t_logs = TLogModel.getAllTlogs(session)
         transaction_logs_list = []
         for t_logs in all_t_logs:
@@ -79,10 +80,11 @@ def transaction():
             })
         
         # return jsonify({"msg": "success"})
+        # print(transaction_logs_list)
+        return jsonify({"t_logs": transaction_logs_list})
 
-        return jsonify({"t_logs": "transaction_logs_list"})
     elif request.method == "POST":
-        data = request.get_json()
+        data = request.get_json(force=True)
 
         p_id = data.get('p_id')
         u_id = data.get('u_id')
@@ -91,16 +93,18 @@ def transaction():
         utr_number = data.get("utr_number")
 
         new_transaction_log = TLogModel.addTransactionLog(session, u_id, s_id, t_cost, utr_number)
-
+        # print(new_transaction_log)
         return jsonify({"mmsg":"Transaction Log added", "Transaction Log": new_transaction_log})
 
 @app.route("/api/transaction/<t_id>", methods=["GET", "DELETE", "PATCH"])
 def transactionById(t_id):
     if request.method == "GET":
+        data = request.get_json(force=True)
+        t_id = data.get("t_id")
         transaction_log_byID = TLogModel.getTlog(session, t_id)
         if transaction_log_byID:
             return jsonify({
-                "p_id": transaction_log_byID.p_id,
+                "t_id": transaction_log_byID.t_id,
                 "u_id": transaction_log_byID.u_id,
                 "s_id": transaction_log_byID.s_id,
                 "t_cost": transaction_log_byID.t_cost,
@@ -109,17 +113,20 @@ def transactionById(t_id):
         return jsonify({"Transaction Log By id": transaction_log_byID})
 
     elif request.method == "DELETE":
+        data = request.get_json(force=True)
+        t_id = data.get('t_id')
         TLogModel.deleteTransactionLog(session, t_id)
         return jsonify({"mssg": "Transaction Log Deleted"})
 
     elif request.method == "PATCH":
-        data = request.get_json()
+        data = request.get_json(force=True)
         t_id = data.get('t_id')
-        u_id = data.get('u_id')
-        s_id = data.get('s_id')
-        t_cost = data.get('t_cost')
-        utr_number = data.get("utr_number")
-        TLogModel.updateTransactionLog(session, t_id, u_id, s_id, t_cost, utr_number)
+        # u_id = data.get('u_id')
+        # s_id = data.get('s_id')
+        # t_cost = data.get('t_cost')
+        # utr_number = data.get("utr_number")
+        # TLogModel.updateTransactionLog(session, t_id, u_id, s_id, t_cost, utr_number)
+        TLogModel.updateTransactionLog(session, **data)
         return jsonify({"msg":"Information Updated"}) 
 
 @app.route("/api/user", methods=["GET", "POST"])
@@ -136,10 +143,10 @@ def user():
                 "address": users.address,
             })
         
-        return jsonify({"msg": "success"})
+        return jsonify({"msg": "success", "data": [list(result) for result in users_list]})
 
     elif request.method == "POST":
-        data = request.get_json()
+        data = request.get_json(force=True)
 
         email = data.get('email')
         phone = data.get('phone')
@@ -152,28 +159,30 @@ def user():
 @app.route("/api/user/<u_id>", methods=["GET", "DELETE", "PATCH"])
 def userById(u_id):
     if request.method == "GET":
+        data = request.get_json(force=True)
         user_by_id = UserModel.getUser(session, u_id)
         if user_by_id:
             return jsonify({
-                "p_id": user_by_id.p_id,
                 "u_id": user_by_id.u_id,
-                "s_id": user_by_id.s_id,
-                "t_cost": user_by_id.t_cost,
-                "utr_number": user_by_id.utr_number,
+                "email": user_by_id.email,
+                "phone": user_by_id.phone,
+                "address": user_by_id.address
             })
         return jsonify({"User By id": user_by_id})
 
     elif request.method == "DELETE":
+        data = request.get_json(force=True)
+        u_id = data.get('u_id')
         UserModel.deleteUser(session, u_id)
         return jsonify({"mssg": "User Log Deleted"})
 
     elif request.method == "PATCH":
         data = request.get_json()
         u_id = data.get('u_id')
-        email = data.get('email')
-        phone = data.get('phone')
-        address = data.get("address")
-        UserModel.updateUserInfo(session, u_id, email, phone, address)
+        # email = data.get('email')
+        # phone = data.get('phone')
+        # address = data.get("address")
+        UserModel.updateUserInfo(session, **data)
         return jsonify({"msg":"Information Updated"}) 
 
 

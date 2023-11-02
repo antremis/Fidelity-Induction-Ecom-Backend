@@ -18,7 +18,7 @@ def addTransactionLog(session, u_id, s_id, t_cost, utr_number):
     return new_transaction_log
 
 def updateTransactionLog(session, t_id, u_id, s_id, t_cost, utr_number):
-    transaction_log = session.query(TransactionLog).filter_by(tid=tid).first()
+    transaction_log = session.query(TransactionLog).filter_by(t_id=t_id).first()
 
     if transaction_log:
         transaction_log.u_id = u_id
