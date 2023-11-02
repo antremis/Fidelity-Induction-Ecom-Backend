@@ -1,14 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from config import Base, session
 import uuid
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-# DB_URL = 'mysql+pymysql://root:root@localhost/fidelity'
-# engine = create_engine(os.getenv("DB_URL"))
-Base=declarative_base()
 
 class User(Base):
     __tablename__='Users'
@@ -16,8 +8,6 @@ class User(Base):
     email=Column(String(50), unique=True, nullable=False)
     phone=Column(String(10))
     address=Column(String(100))
-
-
 
 def getUser(session, u_id):
     return session.query(User).filter_by(u_id=u_id).first()
@@ -50,11 +40,7 @@ def deleteUser(session, u_id):
         
 
 if __name__ == "__main__":
-    engine = create_engine(os.getenv("DB_URL"))
-    Base.metadata.create_all(engine)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-
+    pass
 
 
 # while True:

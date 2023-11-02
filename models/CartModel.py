@@ -1,13 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from dotenv import load_dotenv
-import os
-
-# load_dotenv()
-#DB_URL = 'mysql+pymysql://root:root@localhost/fidelity'
-# DB_ENGINE = create_engine(os.getenv("DB_URL"))
-Base = declarative_base()
+from config import Base, session
 
 class CartItem(Base):
     __tablename__ = 'Cart'
@@ -18,7 +10,6 @@ class CartItem(Base):
     # CUSTOMER = relationship('Customer')
     # PRODUCT = relationship('Product')
 
-# Base.metadata.create_all(DB_ENGINE)
 # Session = sessionmaker(bind=create_engine(DB_ENGINE))
 # session = Session()
 
