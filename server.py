@@ -6,27 +6,15 @@ import models.ReviewModel as ReviewModel
 import models.TLogModel as TLogModel
 import models.TPLogsModel as TPLogsModel
 import models.UserModel as UserModel
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-import os
-load_dotenv()
+from config import Base, engine, session
 
 app = Flask(__name__)
 CORS(app)
-
-Base = declarative_base()
-engine = create_engine(os.getenv("DB_URL"))
-Session = sessionmaker(bind=engine)
-Base.metadata.create_all(engine)
-session = Session()
 
 @app.route("/api/test")
 def test():
     # Template function
     if request.method == "GET":
-        TPLogsModel.insert(session, 1, 2)
         return jsonify({"mssg": "success"})
     elif request.method == "POST":
         return jsonify({"mmsg":"success", "data": [1, 2, 3, 4, 5]})
@@ -35,7 +23,8 @@ def test():
 def product():
     if request.method == "GET":
         # Get all rows from products table using sqlalchemy functions
-        all_products = displayAllProducts(session)
+        id="1"
+        all_products = ProductTableModel.displayAllProducts(session, id)
         products_list = []
         for product in all_products:
             products_list.append({
@@ -133,4 +122,5 @@ def transactionById(t_id):
 
     
 if __name__ == "__main__":
+    Base.metadata.create_all(engine)
     app.run()

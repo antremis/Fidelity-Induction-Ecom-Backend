@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Column, String, Integer, CHAR
-from server import Base, session
+from config import Base, session
 import uuid
 
 class TransactionProduct(Base):  #TransactionProduct
