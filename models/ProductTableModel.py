@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, String, Float, Text
-from server import Base, session
+from config import Base, session
 
 class Product(Base):
     __tablename__ = 'products'
