@@ -26,26 +26,26 @@
       });
 
     // POST request to add a product
-    axios.post('http://127.0.0.1:5000/api/product', {
+    // axios.post('http://127.0.0.1:5000/api/product', {
        
-        name: 'Product Name',
-        cost: 100,
-        tag: 'Product Tag',
-        img: 'product.jpg',
-        des: 'Product Description',
-        s_id: "1"
-      })
-      .then(function (response) {
-        // handle success
-        console.log(response.data);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      });
+    //     name: 'Product Name',
+    //     cost: 100,
+    //     tag: 'Product Tag',
+    //     img: 'product.jpg',
+    //     des: 'Product Description',
+    //     s_id: "1"
+    //   })
+    //   .then(function (response) {
+    //     // handle success
+    //     console.log(response.data);
+    //   })
+    //   .catch(function (error) {
+    //     // handle error
+    //     console.log(error);
+    //   });
 
     // GET request to fetch a product by ID
-    axios.get('http://127.0.0.1:5000/api/products/1')
+    axios.get('http://127.0.0.1:5000/api/products/7fdcb856-ac22-4b28-a960-e1b699798734')
       .then(function (response) {
         // handle success
         console.log(response.data);
@@ -57,7 +57,7 @@
       });
 
     // PATCH request to update a product
-    axios.patch('http://127.0.0.1:5000/api/products/a04a0b82-fc7c-4c84-8f48-ab586af4cc82', {
+    axios.patch('http://127.0.0.1:5000/api/products/7fdcb856-ac22-4b28-a960-e1b699798734', {
         p_id: 1,
         name: 'Updated Product Name',
         cost: 150
@@ -71,16 +71,16 @@
         console.log(error);
       });
 
-    // DELETE request to delete a product
-    axios.delete('http://127.0.0.1:5000/api/products/1')
-      .then(function (response) {
-        // handle success
-        console.log(response.data);
-      })
-      .catch(function (error) {
-        // handle error
-        console.log(error);
-      });
+    // // DELETE request to delete a product
+    // axios.delete('http://127.0.0.1:5000/api/products/1')
+    //   .then(function (response) {
+    //     // handle success
+    //     console.log(response.data);
+    //   })
+    //   .catch(function (error) {
+    //     // handle error
+    //     console.log(error);
+    //   });
   </script>
 </body>
 
