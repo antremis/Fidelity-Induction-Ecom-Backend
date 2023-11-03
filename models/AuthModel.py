@@ -5,6 +5,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import uuid
 import bcrypt
+import jwt
+import datetime
 
 Base = declarative_base()
 class Auth(Base):
@@ -12,7 +14,7 @@ class Auth(Base):
 
     u_id = Column(String(255), primary_key=True, default=uuid.uuid4)  
     username = Column(String(50), unique=True)
-    password = Column(String(255))\
+    password = Column(String(255))
 
 def getUsers(session):
     users = session.query(Auth.u_id).all()
@@ -40,9 +42,25 @@ def deleteUser(session, uid):
     session.query(Auth).filter(Auth.u_id==uid).delete()
     session.commit()
 
+def createJWT():
+    return jwt.encode({'uid': '1234-11-2231sacs', "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=5)}, "ASDASDMOASDMUHASIDGABSUYDFANUSDGAUSD")
+
 if __name__ == "__main__":
-    engine = create_engine('mysql+pymysql://akash:manarises@localhost/fidelity')
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    Base.metadata.create_all(bind=engine)
-    deleteUser(session, "612a280b-5bbd-48ee-9d18-d3ec6031fb70", "1234")
+    # engine = create_engine('mysql+pymysql://root:avi%401201@localhost/fidelity')
+    # Session = sessionmaker(bind=engine)
+    # session = Session()
+    # Base.metadata.create_all(bind=engine)
+    # createUser(session, "Akaash", "12434")
+
+    def loginRequired(f):
+        def decorator(*args, **kwargs):
+            # Get JWT
+            print(args, kwargs)
+            f()
+        return decorator
+
+    @app.route()
+    def protected():
+        print("Here")
+
+    print(createJWT())
