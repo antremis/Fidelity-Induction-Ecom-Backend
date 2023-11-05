@@ -21,20 +21,17 @@ def addUser(session, email, phone, address):
     session.commit()
     return new_user
 
-def updateUserInfo(session, u_id, email, phone, address):
-    user = session.query(User).filter_by(u_id=u_id).first()
+def updateUserInfo(session, u_id, data):
+    user = session.query(User).filter(User.u_id==u_id).first()
 
-    if user:
-        user.email=email
-        user.phone=phone
-        user.address=address
-        session.commit()
-        return user
-    else:
-        return None
+    if data.email: user.email=data.email
+    if data.phone: user.phone=data.phone
+    if data.address: user.address=data.address
+    session.commit()
+    return user
 
 def deleteUser(session, u_id):
-    user = session.query(User).filter_by(u_id=u_id).first()
+    user = session.query(User).filter(User.u_id==u_id).first()
     session.delete(user)
     session.commit()
         

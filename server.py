@@ -171,10 +171,7 @@ def userById(u_id):
     elif request.method == "PATCH":
         data = request.get_json()
         u_id = data.get('u_id')
-        # email = data.get('email')
-        # phone = data.get('phone')
-        # address = data.get("address")
-        UserModel.updateUserInfo(session, **data)
+        UserModel.updateUserInfo(session, data)
         return jsonify({"msg":"Information Updated"}) 
 
 
