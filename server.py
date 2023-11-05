@@ -41,7 +41,6 @@ def get(id):
 def product():
     if request.method == "GET":
         # Get all rows from products table using sqlalchemy functions
-        id="1"
         all_products = ProductTableModel.displayAllProducts(session)
         products_list = []
         for product in all_products:
@@ -55,12 +54,9 @@ def product():
                 "s_id": product.s_id
             })
         return jsonify({"products": products_list})
+
     elif request.method == "POST":
-        # Get create/insert row using sqlalchemy functions
-        #body=request.get_json(force=True)
-        
-        data = request.get_json(force=True)    #parse this JSON data and convert it into a Python dictionary
-        # p_id = data.get('p_id')
+        data = request.get_json(force=True)
         name = data.get('name')
         cost = data.get('cost')
         tag = data.get('tag')
@@ -69,6 +65,12 @@ def product():
         s_id = data.get('s_id')
         new_id = ProductTableModel.addProduct(session, name, cost, tag, img, des, s_id)
         return jsonify({"message": "Product added successfully", "p_id": new_id})
+        
+@app.route("/api/products/categories", methods=["GET"])
+def getProductsByCategory():
+    category = request.args.get("category")
+    result = ProductTableModel.displayProductsByTags(session, category)
+    return jsonify({"mssg": "success", "data": result})
     
 @app.route("/api/products/<p_id>",methods=["GET","PATCH","DELETE"])
 def productById(p_id):
@@ -115,7 +117,7 @@ def logs():
     
 
 @app.route("/api/logs/<t_id>", methods = ['GET', 'PATCH', 'DELETE'])
-def transactionById(t_id):
+def logsById(t_id):
     if request.method == "GET":
        # t_id = "6cac23b8-8d68-4815-94ab-e14a906a3ed8"
        result = TPLogsModel.getPidQuantityForTid(session,t_id)
@@ -198,18 +200,28 @@ def transactionById(t_id):
 @app.route("/api/user", methods=["GET", "POST"])
 def user():
     # Template function
-    if request.method == "GET":
-        all_users = UserModel.getAllUsers(session)
-        users_list = []
-        for users in all_users:
-            users_list.append({
-                "u_id": users.u_id,
-                "email": users.email,
-                "phone":  users.phone,
-                "address": users.address,
-            })
+    # if request.method == "GET":
+    #     all_users = UserModel.getAllUsers(session)
+    #     users_list = []
+    #     for users in all_users:
+    #         users_list.append({
+    #             "u_id": users.u_id,
+    #             "email": users.email,
+    #             "phone":  users.phone,
+    #             "address": users.address,
+    #         })
         
-        return jsonify({"msg": "success", "data": [list(result) for result in users_list]})
+    #     return jsonify({"msg": "success", "data": [list(result) for result in users_list]})
+    if request.method == "GET":
+        user_by_id = UserModel.getUser(session, g.uid)
+        if user_by_id:
+            return jsonify({
+                "u_id": user_by_id.u_id,
+                "email": user_by_id.email,
+                "phone": user_by_id.phone,
+                "address": user_by_id.address
+            })
+        return jsonify({"User By id": user_by_id})
 
     elif request.method == "POST":
         data = request.get_json(force=True)
@@ -313,7 +325,6 @@ def reviewById(r_id):
         return jsonify({"mmsg":"success", "updated review": new_review})
 
 
-    
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    app.run()
+    app.run(debug=True)

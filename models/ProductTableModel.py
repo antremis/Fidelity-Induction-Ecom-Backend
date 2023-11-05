@@ -105,7 +105,7 @@ def displayProductsBySeller(session, s_id):
         
 
 def displayProductsByTags(session, tag):
-    filtered_products = session.query(Product).filter(Product.tag.in_(tag)).all()
+    filtered_products = session.query(Product).filter(Product.tag==tag).all()
     return filtered_products
 
 if __name__=="__main__":
