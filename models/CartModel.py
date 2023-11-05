@@ -1,26 +1,35 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+import uuid
 from config import Base, session
 
 class CartItem(Base):
     __tablename__ = 'Cart'
-    u_id = Column(Integer, nullable=False)
-    p_id = Column(Integer, nullable=False)
+    u_id = Column(String, default=uuid.uuid4)
+    p_id = Column(String, nullable=False)
     qty = Column(Integer, nullable=False, default=1)
     __mapper_args__={"primary_key": [u_id, p_id]}
 
 def addToCart(session, u_id, p_id, qty):
-    try: CartItem(u_id=u_id, p_id=p_id, qty=qty)
-    except: pass
+    item = session.query(CartItem).filter(CartItem.u_id==u_id, CartItem.p_id==p_id).first()
+    if item:
+        try: 
+            if item.qty + qty <= 0: return removeFromCart(session, u_id, p_id)
+            item.qty += qty
+            session.commit()
+        except: raise Exception("Could not update cart")
+    else:
+        try: CartItem(u_id=u_id, p_id=p_id, qty=qty)
+        except: raise Exception("Could not update cart")
 
 def getCart(session, u_id):
-    try: return session.query(CartItem).filter_by(CartItem.u_id==u_id).all()
-    except: pass
+    try: return session.query(CartItem).filter(CartItem.u_id==u_id).all()
+    except: raise Exception("Some Error Occured")
 
 def removeFromCart(session, uid, pid):
     try: 
         session.query(CartItem).filter(CartItem.u_id==uid, CartItem.p_id==pid).first().delete()
         session.commit()
-    except: pass
+    except: raise Exception("Couldnot Delete Item")
 
 if __name__ == "__main__":
     load_dotenv()
