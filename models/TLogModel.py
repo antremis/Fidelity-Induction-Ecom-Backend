@@ -1,7 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, Float, String, Datetime
+from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime
 from config import Base, session
 import uuid
-from datetime.datetime import now
+from datetime import datetime
 
 class TransactionLog(Base):
     __tablename__ = 'T_log'
@@ -10,7 +10,7 @@ class TransactionLog(Base):
     u_id = Column(String(100), unique=True)
     s_id = Column(String(100), unique=True)
     t_cost = Column(Float(50))
-    date = Column(Datetime, default=now)
+    time = Column(DateTime, default=datetime.now)
 
 def addTransactionLog(session, u_id, s_id, t_cost):
     try:
