@@ -19,49 +19,7 @@ def test():
     elif request.method == "POST":
         return jsonify({"mmsg":"success", "data": [1, 2, 3, 4, 5]})
 
-@app.route("/api/product", methods=["GET", "POST"])
-def product():
-    if request.method == "GET":
-        # Get all rows from products table using sqlalchemy functions
-        id="1"
-        all_products = ProductTableModel.displayAllProducts(session, id)
-        products_list = []
-        for product in all_products:
-            products_list.append({
-                "p_id": product.p_id,
-                "name": product.name,
-                "cost": product.cost,
-                "tag": product.tag,
-                "img": product.img,
-                "des": product.des,
-                "s_id": product.s_id
-            })
-        return jsonify({"products": products_list})
-    elif request.method == "POST":
-        # Get create/insert row using sqlalchemy functions
-        data = request.get_json()    #parse this JSON data and convert it into a Python dictionary
-        p_id = data.get('p_id')
-        name = data.get('name')
-        cost = data.get('cost')
-        tag = data.get('tag')
-        img = data.get('img')
-        des = data.get('des')
-        s_id = data.get('s_id')
-        new_id = ReviewModel.addProduct(session, p_id, name, cost, tag, img, des, s_id)
-        return jsonify({"message": "Product added successfully", "p_id": new_id})
 
-@app.route("/api/products/:id",methods=["GET","PATCH","DELETE"])
-def productById():
-    if request.method == "GET":
-        # Get 1 row from products table where products.id = id using sqlalchemy functions
-        return jsonify({"mssg": "success"})
-    elif request.method == "PATCH":
-        # Update 1 row in products table where products.id = id using sqlalchemy functions
-        return jsonify({"mssg":"success", "data": [1, 2, 3, 4, 5]})
-    elif request.method == "DELETE":
-        # Delete 1 row from products table where products.id = id using sqlalchemy functions
-
-        return jsonify({"mssg": "success"})
 
     
 @app.route("/api/review",methods=["GET","POST"])
@@ -95,7 +53,7 @@ def reviewPid():
     if request.method == "POST":
 
         data = request.get_json(force=True)
-        
+
         p_id=data.get("p_id")
         review=data.get("review")
         u_id=data.get("u_id")
@@ -105,8 +63,26 @@ def reviewPid():
 
         return jsonify({"message": "Product added successfully", "new review": new_id})
 
+@app.route('/api/review/product/<pid>',methods=["GET"])
+def getReviewByPid(pid):
+    if request.method == "GET":
+        all_review=ReviewModel.readReviewPid(session,pid)
+        review_list=[]
+        for reviews in all_review:
+            review_list.append({
+                "r_id":reviews.r_id,
+                "p_id":reviews.p_id,
+                "review":reviews.review,
+                "u_id":reviews.u_id,
+                "date":reviews.date,
+                "rating":reviews.rating
+            })
+        return jsonify({"reviews":review_list})
+
+
 @app.route("/api/review/<r_id>",methods=["GET","PATCH","DELETE"])
 def reviewById(r_id):
+
     if request.method == "GET":
         return jsonify({"mssg": "success"})
     
