@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 import models.AuthModel as AuthModel
 import models.CartModel as CartModel
@@ -12,6 +12,41 @@ from config import Base, engine,session
 
 app = Flask(__name__)
 CORS(app)
+carts = []
+
+# Define a route to add a product to the cart
+@app.route("/api/cart", methods=["POST"])
+def addToCart():
+    if request.method == "GET":
+        user_cart = CartModel.getCart(session, g.uid)
+        if user_cart:
+            return jsonify({"mssg": "success", "data": user_cart})
+            
+    if request.method == "POST":
+        data = request.get_json(force=True)
+        p_id = data.get("p_id")
+        qty = data.get("qty")
+        CartModel.addToCart(session, g.uid, p_id, qty)
+        return jsonify({"message": "Product added to the cart successfully."})
+
+    if request.method == "DELETE":
+        CartModel.removeFromCart(session)
+        return jsonify({"message": "Product removed from the cart successfully."})
+
+# Define a route to get the cart for a user
+@app.route("/api/cart/<int:u_id>", methods=["GET"])
+def getCart(u_id):
+    pass
+
+# Define a route to remove a cart item
+@app.route("/api/cart/<int:u_id>/<int:p_id>", methods=["DELETE"])
+def removeFromCart(u_id, p_id):
+    for cart_item in carts:
+        if cart_item["u_id"] == u_id and cart_item["p_id"] == p_id:
+            carts.remove(cart_item)
+            return jsonify({"message": "Cart item removed from the cart successfully."})
+
+    return jsonify({"message": "Cart item not found in the cart."}), 404
 
 @app.route("/api/auth", methods=["GET", "PUT", "POST"])
 def auth():

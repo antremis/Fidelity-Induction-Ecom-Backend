@@ -1,62 +1,42 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+import uuid
 from config import Base, session
 
 class CartItem(Base):
     __tablename__ = 'Cart'
-    u_id = Column(Integer, nullable=False)
-    p_id = Column(Integer, nullable=False)
+    u_id = Column(String, default=uuid.uuid4)
+    p_id = Column(String, nullable=False)
     qty = Column(Integer, nullable=False, default=1)
     __mapper_args__={"primary_key": [u_id, p_id]}
-    # CUSTOMER = relationship('Customer')
-    # PRODUCT = relationship('Product')
 
-# Session = sessionmaker(bind=create_engine(DB_ENGINE))
-# session = Session()
-
-def addToCart(session):
-    u_id = int(input("Enter u_id: "))
-    p_id = int(input("Enter p_id: "))
-
-    # Check if the CUSTOMER and PRODUCT exist
-    # CUSTOMER = session.query(Customer).filter_by(id=customer_id).first()
-    # PRODUCT = session.query(Product).filter_by(id=product_id).first()
-
-    # if CUSTOMER and PRODUCT:
-    quantity = int(input("Enter the quantity: "))
-    if quantity > 0:
-        cart_item = CartItem(u_id=u_id, p_id=p_id, qty=quantity)
-        session.add(cart_item)
-        session.commit()
-        return cart_item
-    #     print("Product added to the cart successfully.")
-    # else:
-    #     print("Quantity must be greater than 0.")
-    # else:
-    #     print("CUSTOMER or PRODUCT not found.")
+def addToCart(session, u_id, p_id, qty):
+    item = session.query(CartItem).filter(CartItem.u_id==u_id, CartItem.p_id==p_id).first()
+    if item:
+        try: 
+            if item.qty + qty <= 0: return removeFromCart(session, u_id, p_id)
+            item.qty += qty
+            session.commit()
+        except: raise Exception("Could not update cart")
+    else:
+        try: CartItem(u_id=u_id, p_id=p_id, qty=qty)
+        except: raise Exception("Could not update cart")
 
 def getCart(session, u_id):
-    cart = session.query(CartItem).filter_by(u_id=u_id).all()
-    return cart
+    try: return session.query(CartItem).filter(CartItem.u_id==u_id).all()
+    except: raise Exception("Some Error Occured")
 
-def removeFromCart(session):
-    customer_id = int(input("Enter CUSTOMER_ID: "))
-    product_id = int(input("Enter PRODUCT_ID: "))
+def removeFromCart(session, uid, pid):
+    try: 
+        session.query(CartItem).filter(CartItem.u_id==uid, CartItem.p_id==pid).first().delete()
+        session.commit()
+    except: raise Exception("Couldnot Delete Item")
 
-    # Check if the CUSTOMER and PRODUCT exist
-    # CUSTOMER = session.query(Customer).filter_by(id=customer_id).first()
-    # PRODUCT = session.query(Product).filter_by(id=product_id).first()
-
-    # if CUSTOMER and PRODUCT:
-    cart_item = session.query(CartItem).filter_by(u_id=customer_id, p_id=product_id).first()
-    # if cart_item:
-    session.delete(cart_item)
-    session.commit()
-    return (cart_item)
-        # print("Product removed from the cart successfully.")
-    # else:
-    #     print("Product not found in the CUSTOMER's cart.")
-    # else:
-    #     print("CUSTOMER or PRODUCT not found.")
+if __name__ == "__main__":
+    load_dotenv()
+    DB_ENGINE = create_engine(os.getenv("DB_URL"))
+    Session = sessionmaker(bind=DB_ENGINE)
+    session = Session()
+    Base.metadata.create_all(DB_ENGINE)
 
 # while True:
 #     print("1. Add Product to Cart")
