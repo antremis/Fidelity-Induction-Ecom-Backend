@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 import models.AuthModel as AuthModel
 import models.CartModel as CartModel
@@ -8,32 +8,48 @@ import models.TLogModel as TLogModel
 import models.TPLogsModel as TPLogsModel
 import models.UserModel as UserModel
 from config import Base, engine, session
+from decorators import loginRequired, adminOnly
 
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/api/auth", methods=["GET", "PUT", "POST"])
-def auth():
+@app.route("/api/test", methods=["GET"])
+def test():
+    return jsonify({"mssg": "success"})
+
+@app.route("/api/auth", methods=["GET", "PATCH"])
+@loginRequired
+@adminOnly
+def adminAuth():
     if request.method == "GET":
         users = AuthModel.getUsers(session)
         return jsonify({"mssg": "success", "data":users})
+    elif request.method == "PATCH":
+        uid = request.get_json(force=True).get("uid")
+        AuthModel.makeAdmin(uid)
+        return jsonify({"mssg": f"success! user {uid} was made an admin"})
+
+@app.route("/api/auth", methods=["PUT", "POST"])
+def auth():
     if request.method == "PUT":
         data = request.get_json(force=True)
         username = data.get("username")
         password = data.get("password")
         uid = AuthModel.createUser(session, username, password)
-        return jsonify({"mssg": "success", "data":uid})
+        return jsonify({"mssg": "success", "data": AuthModel.createJWT(uid)})
     elif request.method == "POST":
         body = request.get_json(force=True)
         username=body.get("username")
         password=body.get("password")
         uid = AuthModel.checkUser(session, username, password)
-        return jsonify({"mssg":"success", "data": uid})
+        return jsonify({"mssg":"success", "data": AuthModel.createJWT(uid)})
 
 @app.route("/api/auth/<id>", methods=["DELETE"])
+@loginRequired
 def get(id):
     if request.method == "DELETE":
-        result = AuthModel.deleteUser(session, id)
+        if id != g.uid: return jsonify({"mssg": "You are Unauthorised to complete this action!"})
+        AuthModel.deleteUser(session, id)
         return jsonify({"mssg":"success"})
 
 @app.route("/api/product", methods=["DELETE"])
@@ -82,4 +98,4 @@ def productById():
     
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    app.run()
+    app.run(debug=True)
