@@ -1,51 +1,51 @@
-from sqlalchemy import create_engine, Column, Integer, Float, String
+from sqlalchemy import create_engine, Column, Integer, Float, String, Datetime
 from config import Base, session
 import uuid
+from datetime.datetime import now
 
 class TransactionLog(Base):
     __tablename__ = 'T_log'
 
-    t_id = Column(String(100), primary_key=True, default=str(uuid.uuid4()), unique=True)
+    t_id = Column(String(100), primary_key=True, default=uuid.uuid4, unique=True)
     u_id = Column(String(100), unique=True)
     s_id = Column(String(100), unique=True)
     t_cost = Column(Float(50))
-    utr_number = Column(String(100), unique=True, nullable=False)
+    date = Column(Datetime, default=now)
 
-def addTransactionLog(session, u_id, s_id, t_cost, utr_number):
-    new_transaction_log = TransactionLog(u_id=u_id, s_id=s_id, t_cost=t_cost, utr_number=utr_number)
-    session.add(new_transaction_log)
-    session.commit()
-    return new_transaction_log
+def addTransactionLog(session, u_id, s_id, t_cost):
+    try:
+        new_transaction_log = TransactionLog(u_id=u_id, s_id=s_id, t_cost=t_cost)
+        session.add(new_transaction_log)
+        session.commit()
+        return new_transaction_log.t_id
+    except: raise Exception("Could not add Transaction")
 
 def updateTransactionLog(session, t_id, u_id, s_id, t_cost, utr_number):
-    transaction_log = session.query(TransactionLog).filter_by(t_id=t_id).first()
-
-    if transaction_log:
-        transaction_log.u_id = u_id
-        transaction_log.s_id = s_id
-        transaction_log.t_cost = t_cost
-        transaction_log.utr_number = utr_number
-
+    try:
+        transaction_log = session.query(TransactionLog).filter(TransactionLog.t_id==t_id).first()
+        if u_id: transaction_log.u_id = u_id
+        if s_id: transaction_log.s_id = s_id
+        if t_cost: transaction_log.t_cost = t_cost
         session.commit()
-        return transaction_log
-    else:
-        return None
+    except: raise Exception("Could not update transaction")
+
 def deleteTransactionLog(session, t_id):
-    transaction_log = session.query(TransactionLog).filter_by(t_id=t_id).first()
-    session.delete(transaction_log)
-    session.commit()
+    try:
+        session.query(TransactionLog).filter_by(t_id=t_id).first().delete()
+        session.commit()
+    except: raise Exception("Could not delete transaction")
         
 def getAllTlogs(session):
     return session.query(TransactionLog).all()
 
 def getTlog(session, t_id):
-    return session.query(TransactionLog).filter_by(t_id=t_id).first()
+    return session.query(TransactionLog).filter(TransactionLog.t_id==t_id).first()
 
 def getTlogUser(session, u_id):
-    return session.query(TransactionLog).filter_by(u_id=u_id).all()
+    return session.query(TransactionLog).filter(TransactionLog.u_id==u_id).all()
 
 def getTlogSeller(session, s_id):
-    return session.query(TransactionLog).filter_by(s_id=s_id).all()
+    return session.query(TransactionLog).filter(TransactionLog.s_id==s_id).all()
 
 if __name__ == "__main__":
     pass
