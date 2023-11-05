@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime,func,UniqueConstraint
-# from config import Base, session
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime,func,UniqueConstraint, Boolean
+from config import Base, session
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -7,14 +7,15 @@ import uuid
 import bcrypt
 import jwt
 import datetime
+import os
 
-Base = declarative_base()
 class Auth(Base):
     __tablename__ = 'Auth'  # Table name
 
     u_id = Column(String(255), primary_key=True, default=uuid.uuid4)  
     username = Column(String(50), unique=True)
     password = Column(String(255))
+    admin = Column(Boolean)
 
 def getUsers(session):
     users = session.query(Auth.u_id).all()
@@ -42,8 +43,14 @@ def deleteUser(session, uid):
     session.query(Auth).filter(Auth.u_id==uid).delete()
     session.commit()
 
-def createJWT():
-    return jwt.encode({'uid': '1234-11-2231sacs', "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=5)}, "ASDASDMOASDMUHASIDGABSUYDFANUSDGAUSD")
+def createJWT(uid):
+    return jwt.encode({'uid': uid, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)}, os.getenv("SECRET_KEY"))
+
+def checkAdmin(uid):
+    try:
+        user = session.query(Auth).filter(Auth.u_id==uid).first()
+        return user.admin
+    except: return False
 
 if __name__ == "__main__":
     # engine = create_engine('mysql+pymysql://root:avi%401201@localhost/fidelity')

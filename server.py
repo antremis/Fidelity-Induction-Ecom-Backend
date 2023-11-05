@@ -8,13 +8,16 @@ import models.TLogModel as TLogModel
 import models.TPLogsModel as TPLogsModel
 import models.UserModel as UserModel
 from config import Base, engine, session
+from decorators import loginRequired
 
 app = Flask(__name__)
 CORS(app)
 
 @app.route("/api/auth", methods=["GET", "PUT", "POST"])
+@loginRequired
 def auth():
     if request.method == "GET":
+        # print(request.uid)
         users = AuthModel.getUsers(session)
         return jsonify({"mssg": "success", "data":users})
     if request.method == "PUT":
@@ -28,7 +31,7 @@ def auth():
         username=body.get("username")
         password=body.get("password")
         uid = AuthModel.checkUser(session, username, password)
-        return jsonify({"mssg":"success", "data": uid})
+        return jsonify({"mssg":"success", "data": AuthModel.createJWT(uid)})
 
 @app.route("/api/auth/<id>", methods=["DELETE"])
 def get(id):
@@ -36,7 +39,7 @@ def get(id):
         result = AuthModel.deleteUser(session, id)
         return jsonify({"mssg":"success"})
 
-@app.route("/api/product", methods=["DELETE"])
+@app.route("/api/product", methods=["GET", "POST"])
 def product():
     if request.method == "GET":
         # Get all rows from products table using sqlalchemy functions
@@ -64,7 +67,7 @@ def product():
         img = data.get('img')
         des = data.get('des')
         s_id = data.get('s_id')
-        new_id = addProduct(session, p_id, name, cost, tag, img, des, s_id)
+        new_id = ProductTableModel.addProduct(session, p_id, name, cost, tag, img, des, s_id)
         return jsonify({"message": "Product added successfully", "p_id": new_id})
     
 @app.route("/api/products/:id",methods=["GET","PATCH","DELETE"])
@@ -82,4 +85,4 @@ def productById():
     
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-    app.run()
+    app.run(debug = True)
