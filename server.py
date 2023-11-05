@@ -143,7 +143,15 @@ def productById(p_id):
     elif request.method == "PATCH":
         # Update 1 row in products table where products.id = id using sqlalchemy functions
         data = request.get_json(force=True)
-        p_id = data.get('p_id')
+        data={
+            p_id = data.get('p_id'),
+            name = data.get('name'),
+            cost = data.get('cost'),
+            tag = data.get('tag'),
+            img = data.get('img'),
+            des = data.get('des'),
+            s_id = data.get('s_id',)
+        }
         ProductTableModel.updateProductInfo(session, **data)
         return jsonify({"message": "Product updated successfully"})
     
