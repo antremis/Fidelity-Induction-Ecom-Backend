@@ -13,8 +13,12 @@ from decorators import loginRequired
 app = Flask(__name__)
 CORS(app)
 
+
+@app.route("/api/test", methods=["GET", "PUT", "POST"])
+def test():
+    return jsonify({"mssg": "success"})
+    
 @app.route("/api/auth", methods=["GET", "PUT", "POST"])
-@loginRequired
 def auth():
     if request.method == "GET":
         # print(request.uid)
