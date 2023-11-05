@@ -20,7 +20,7 @@ python-dotenv==0.21.1
 pytz==2023.3.post1
 SQLAlchemy==2.0.22
 sqlparse==0.4.4
-typing_extensions==4.8.0
+typing_extensions==4.7.1
 tzdata==2023.3
 waitress==2.1.2
 Werkzeug==3.0.1
