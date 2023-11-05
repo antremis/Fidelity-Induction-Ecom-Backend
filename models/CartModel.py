@@ -7,56 +7,20 @@ class CartItem(Base):
     p_id = Column(Integer, nullable=False)
     qty = Column(Integer, nullable=False, default=1)
     __mapper_args__={"primary_key": [u_id, p_id]}
-    # CUSTOMER = relationship('Customer')
-    # PRODUCT = relationship('Product')
 
-# Session = sessionmaker(bind=create_engine(DB_ENGINE))
-# session = Session()
-
-def addToCart(session):
-    u_id = int(input("Enter u_id: "))
-    p_id = int(input("Enter p_id: "))
-
-    # Check if the CUSTOMER and PRODUCT exist
-    # CUSTOMER = session.query(Customer).filter_by(id=customer_id).first()
-    # PRODUCT = session.query(Product).filter_by(id=product_id).first()
-
-    # if CUSTOMER and PRODUCT:
-    quantity = int(input("Enter the quantity: "))
-    if quantity > 0:
-        cart_item = CartItem(u_id=u_id, p_id=p_id, qty=quantity)
-        session.add(cart_item)
-        session.commit()
-        return cart_item
-    #     print("Product added to the cart successfully.")
-    # else:
-    #     print("Quantity must be greater than 0.")
-    # else:
-    #     print("CUSTOMER or PRODUCT not found.")
+def addToCart(session, u_id, p_id, qty):
+    try: CartItem(u_id=u_id, p_id=p_id, qty=qty)
+    except: pass
 
 def getCart(session, u_id):
-    cart = session.query(CartItem).filter_by(u_id=u_id).all()
-    return cart
+    try: return session.query(CartItem).filter_by(CartItem.u_id==u_id).all()
+    except: pass
 
-def removeFromCart(session):
-    customer_id = int(input("Enter CUSTOMER_ID: "))
-    product_id = int(input("Enter PRODUCT_ID: "))
-
-    # Check if the CUSTOMER and PRODUCT exist
-    # CUSTOMER = session.query(Customer).filter_by(id=customer_id).first()
-    # PRODUCT = session.query(Product).filter_by(id=product_id).first()
-
-    # if CUSTOMER and PRODUCT:
-    cart_item = session.query(CartItem).filter_by(u_id=customer_id, p_id=product_id).first()
-    # if cart_item:
-    session.delete(cart_item)
-    session.commit()
-    return (cart_item)
-        # print("Product removed from the cart successfully.")
-    # else:
-    #     print("Product not found in the CUSTOMER's cart.")
-    # else:
-    #     print("CUSTOMER or PRODUCT not found.")
+def removeFromCart(session, uid, pid):
+    try: 
+        session.query(CartItem).filter(CartItem.u_id==uid, CartItem.p_id==pid).first().delete()
+        session.commit()
+    except: pass
 
 if __name__ == "__main__":
     load_dotenv()
