@@ -16,6 +16,7 @@ carts = []
 
 # Define a route to add a product to the cart
 @app.route("/api/cart", methods=["POST"])
+@loginRequired
 def addToCart():
     if request.method == "GET":
         user_cart = CartModel.getCart(session, g.uid)
@@ -40,6 +41,7 @@ def getCart(u_id):
 
 # Define a route to remove a cart item
 @app.route("/api/cart/<int:u_id>/<int:p_id>", methods=["DELETE"])
+@loginRequired
 def removeFromCart(u_id, p_id):
     for cart_item in carts:
         if cart_item["u_id"] == u_id and cart_item["p_id"] == p_id:
@@ -87,7 +89,8 @@ def get(id):
         AuthModel.deleteUser(session, id)
         return jsonify({"mssg":"success"})
 
-@app.route("/api/product", methods=["DELETE"])
+@app.route("/api/product", methods=["GET", "POST"])
+@loginRequired
 def product():
     if request.method == "GET":
         # Get all rows from products table using sqlalchemy functions
@@ -112,7 +115,7 @@ def product():
         tag = data.get('tag')
         img = data.get('img')
         des = data.get('des')
-        s_id = data.get('s_id')
+        s_id = g.uid
         new_id = ProductTableModel.addProduct(session, name, cost, tag, img, des, s_id)
         return jsonify({"message": "Product added successfully", "p_id": new_id})
         
@@ -120,37 +123,52 @@ def product():
 def getProductsByCategory():
     category = request.args.get("category")
     result = ProductTableModel.displayProductsByTags(session, category)
-    return jsonify({"mssg": "success", "data": result})
+    return jsonify({"mssg": "success", "data": [{
+        "name" : product.name,
+        "cost" : product.cost,
+        "tag" : product.tag,
+        "img" : product.img,
+        "des" : product.des,
+        "p_id" : product.p_id
+    } for product in result]})
     
 @app.route("/api/products/<p_id>",methods=["GET","PATCH","DELETE"])
 def productById(p_id):
     if request.method == "GET":
         # Get 1 row from products table where products.id = id using sqlalchemy functions
-        product = ProductTableModel.readProductById(session, p_id)
+        products = ProductTableModel.readProductById(session, p_id)
         if product:
-            return jsonify({
-                "p_id": product.p_id,
-                "name": product.name,
-                "cost": product.cost,
-                "tag": product.tag,
-                "img": product.img,
-                "des": product.des,
-                "s_id": product.s_id
-            })
+            return jsonify({"mssg": "success", "data": {
+                    "p_id": products.p_id,
+                    "name": products.name,
+                    "cost": products.cost,
+                    "tag": products.tag,
+                    "img": products.img,
+                    "des": products.des,
+                    "s_id": products.s_id
+                }})
         else:
-            return jsonify({"message": "Product not found"})
+            return jsonify({"message": {
+                    "p_id": "NA",
+                    "name": "NA",
+                    "cost": "NA",
+                    "tag": "NA",
+                    "img": "NA",
+                    "des": "NA",
+                    "s_id": "NA"
+                }})
         
     elif request.method == "PATCH":
         # Update 1 row in products table where products.id = id using sqlalchemy functions
         data = request.get_json(force=True)
         data={
-            p_id = data.get('p_id'),
-            name = data.get('name'),
-            cost = data.get('cost'),
-            tag = data.get('tag'),
-            img = data.get('img'),
-            des = data.get('des'),
-            s_id = data.get('s_id',)
+            p_id : data.get('p_id'),
+            name : data.get('name'),
+            cost : data.get('cost'),
+            tag : data.get('tag'),
+            img : data.get('img'),
+            des : data.get('des'),
+            s_id : data.get('s_id',)
         }
         ProductTableModel.updateProductInfo(session, **data)
         return jsonify({"message": "Product updated successfully"})
@@ -248,7 +266,8 @@ def transactionById(t_id):
         TLogModel.updateTransactionLog(session, **data)
         return jsonify({"msg":"Information Updated"}) 
 
-@app.route("/api/user", methods=["GET", "POST"])
+@app.route("/api/user", methods=["GET", "POST", "PATCH"])
+@loginRequired
 def user():
     # Template function
     if request.method == "GET":
@@ -270,8 +289,14 @@ def user():
         phone = data.get('phone')
         address = data.get('address')
        
-        new_user = UserModel.addUser(session, email, phone, address)
-        return jsonify({"mssg":"User added", "User": new_user})
+        UserModel.addUser(session, g.uid, email, phone, address)
+        return jsonify({"mssg":"User added"})
+
+    elif request.method == "PATCH":
+        data = request.get_json()
+        print(data)
+        UserModel.updateUserInfo(session, g.uid, data)
+        return jsonify({"msg":"Information Updated"}) 
 
 
 @app.route("/api/user/<u_id>", methods=["GET", "DELETE", "PATCH"])
@@ -294,11 +319,7 @@ def userById(u_id):
         UserModel.deleteUser(session, u_id)
         return jsonify({"mssg": "User Log Deleted"})
 
-    elif request.method == "PATCH":
-        data = request.get_json()
-        u_id = data.get('u_id')
-        UserModel.updateUserInfo(session, data)
-        return jsonify({"msg":"Information Updated"}) 
+    
     
 @app.route("/api/review",methods=["GET","POST"])
 def reviewPid():

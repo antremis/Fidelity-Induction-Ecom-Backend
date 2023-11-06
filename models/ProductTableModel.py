@@ -5,13 +5,13 @@ import uuid
 class Product(Base):
     __tablename__ = 'products'
 
-    p_id = Column(String(50), primary_key=True, default=uuid.uuid4)
+    p_id = Column(String(255), primary_key=True, default=uuid.uuid4)
     name = Column(String(255))
-    cost = Column(Float)
+    cost = Column(Integer)
     tag = Column(String(255))
     img = Column(String(255))
     des = Column(Text)
-    s_id = Column(String(50))
+    s_id = Column(String(255))
 
 # Create the table in the database
 
@@ -105,7 +105,7 @@ def displayProductsBySeller(session, s_id):
         
 
 def displayProductsByTags(session, tag):
-    filtered_products = session.query(Product).filter(Product.tag==tag).all()
+    filtered_products = session.query(Product).filter(Product.tag.like(f"%{tag}%")).all()
     return filtered_products
 
 if __name__=="__main__":

@@ -4,7 +4,7 @@ import uuid
 
 class User(Base):
     __tablename__='Users'
-    u_id=Column(String(100), primary_key=True, default=str(uuid.uuid4()), unique=True)
+    u_id=Column(String(100), primary_key=True, unique=True)
     email=Column(String(50), unique=True, nullable=False)
     phone=Column(String(10))
     address=Column(String(100))
@@ -15,8 +15,8 @@ def getUser(session, u_id):
 def getAllUsers(session):
     return session.query(User).all()
 
-def addUser(session, email, phone, address):
-    new_user = User(email=email, phone=phone, address=address)
+def addUser(session, uid, email, phone, address):
+    new_user = User(u_id=uid, email=email, phone=phone, address=address)
     session.add(new_user)
     session.commit()
     return new_user
@@ -24,9 +24,9 @@ def addUser(session, email, phone, address):
 def updateUserInfo(session, u_id, data):
     user = session.query(User).filter(User.u_id==u_id).first()
 
-    if data.email: user.email=data.email
-    if data.phone: user.phone=data.phone
-    if data.address: user.address=data.address
+    if data.get("email"): user.email=data.get("email")
+    if data.get("phone"): user.phone=data.get("phone")
+    if data.get("address"): user.address=data.get("address")
     session.commit()
     return user
 
