@@ -15,7 +15,7 @@ CORS(app)
 carts = []
 
 # Define a route to add a product to the cart
-@app.route("/api/cart", methods=["POST"])
+@app.route("/api/cart", methods=["GET", "POST"])
 @loginRequired
 def addToCart():
     if request.method == "GET":
@@ -338,6 +338,7 @@ def getReviewByPid(pid):
         return jsonify({"reviews":review_list})
     
 @app.route("/api/review",methods=["GET","POST"])
+@loginRequired
 def reviewPid():
     # if request.method == "GET":
     #     all_review=readReviewPid(session)
@@ -371,7 +372,7 @@ def reviewPid():
         
         p_id=data.get("p_id")
         review=data.get("review")
-        u_id=data.get("u_id")
+        u_id=g.uid
         rating=data.get("rating")
 
         new_id = ReviewModel.createNewReview(session,p_id,review,u_id,rating)
