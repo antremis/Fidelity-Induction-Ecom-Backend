@@ -89,9 +89,8 @@ def get(id):
         AuthModel.deleteUser(session, id)
         return jsonify({"mssg":"success"})
 
-@app.route("/api/product", methods=["GET", "POST"])
-@loginRequired
-def product():
+@app.route("/api/product", methods=["GET"])
+def getProduct():
     if request.method == "GET":
         # Get all rows from products table using sqlalchemy functions
         all_products = ProductTableModel.displayAllProducts(session)
@@ -108,7 +107,10 @@ def product():
             })
         return jsonify({"products": products_list})
 
-    elif request.method == "POST":
+@app.route("/api/product", methods=["POST"])
+@loginRequired
+def postProduct():
+    if request.method == "POST":
         data = request.get_json(force=True)
         name = data.get('name')
         cost = data.get('cost')
@@ -136,16 +138,16 @@ def getProductsByCategory():
 def productById(p_id):
     if request.method == "GET":
         # Get 1 row from products table where products.id = id using sqlalchemy functions
-        products = ProductTableModel.readProductById(session, p_id)
-        if product:
+        p = ProductTableModel.readProductById(session, p_id)
+        if p:
             return jsonify({"mssg": "success", "data": {
-                    "p_id": products.p_id,
-                    "name": products.name,
-                    "cost": products.cost,
-                    "tag": products.tag,
-                    "img": products.img,
-                    "des": products.des,
-                    "s_id": products.s_id
+                    "p_id": p.p_id,
+                    "name": p.name,
+                    "cost": p.cost,
+                    "tag": p.tag,
+                    "img": p.img,
+                    "des": p.des,
+                    "s_id": p.s_id
                 }})
         else:
             return jsonify({"message": {

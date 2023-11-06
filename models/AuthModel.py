@@ -7,6 +7,7 @@ import uuid
 import bcrypt
 import jwt
 import datetime
+import os
 
 class Auth(Base):
     __tablename__ = 'Auth'  # Table name
@@ -43,7 +44,7 @@ def deleteUser(session, uid):
     session.commit()
 
 def createJWT(uid):
-    return jwt.encode({'uid': uid, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)}, "ASDASDMOASDMUHASIDGABSUYDFANUSDGAUSD")
+    return jwt.encode({'uid': uid, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)}, os.getenv("SECRET_KEY"))
 
 def isAdmin(uid):
     return session.query(Auth.is_admin).filter(Auth.u_id==uid).first().is_admin
