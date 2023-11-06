@@ -59,6 +59,7 @@ def test():
 @adminOnly
 def adminAuth():
     if request.method == "GET":
+        # print(request.uid)
         users = AuthModel.getUsers(session)
         return jsonify({"mssg": "success", "data":users})
     elif request.method == "PATCH":
@@ -387,4 +388,8 @@ def reviewById(r_id):
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
+<<<<<<< HEAD
     app.run(debug=True)
+=======
+    app.run(debug = True)
+>>>>>>> origin/prod
