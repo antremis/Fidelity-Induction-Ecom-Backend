@@ -265,7 +265,7 @@ def transactionById(t_id):
         u_id = data.get('u_id')
         s_id = data.get('s_id')
         t_cost = data.get('t_cost')
-        TLogModel.updateTransactionLog(session, t_id, u_id, s_id, t_cost, utr_number)
+        TLogModel.updateTransactionLog(session, t_id, u_id, s_id, t_cost)
         TLogModel.updateTransactionLog(session, **data)
         return jsonify({"msg":"Information Updated"}) 
 
@@ -301,7 +301,6 @@ def user():
         UserModel.updateUserInfo(session, g.uid, data)
         return jsonify({"msg":"Information Updated"}) 
 
-
 @app.route("/api/user/<u_id>", methods=["GET", "DELETE", "PATCH"])
 def userById(u_id):
     if request.method == "GET":
@@ -321,8 +320,22 @@ def userById(u_id):
         u_id = data.get('u_id')
         UserModel.deleteUser(session, u_id)
         return jsonify({"mssg": "User Log Deleted"})
-
     
+@app.route('/api/review/product/<pid>',methods=["GET"])
+def getReviewByPid(pid):
+    if request.method == "GET":
+        all_review=ReviewModel.readReviewPid(session,pid)
+        review_list=[]
+        for reviews in all_review:
+            review_list.append({
+                "r_id":reviews.r_id,
+                "p_id":reviews.p_id,
+                "review":reviews.review,
+                "u_id":reviews.u_id,
+                "date":reviews.date,
+                "rating":reviews.rating
+            })
+        return jsonify({"reviews":review_list})
     
 @app.route("/api/review",methods=["GET","POST"])
 def reviewPid():
@@ -388,8 +401,4 @@ def reviewById(r_id):
 
 if __name__ == "__main__":
     Base.metadata.create_all(engine)
-<<<<<<< HEAD
-    app.run(debug=True)
-=======
     app.run(debug = True)
->>>>>>> origin/prod
